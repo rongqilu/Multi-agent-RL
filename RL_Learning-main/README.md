@@ -90,15 +90,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 1. 修复 [issue-1](https://github.com/Ronchy2000/Multi-agent-RL/issues/1)：第8章 TD-Linear（线性函数逼近）实现中的两个问题：  
   - 修正 `scripts/Chapter8_Value Function Approximaton/1.TD-Linear.py` 中 `reward_list` 与 `scripts/grid_env.py` 的 `Rsa` 奖励索引顺序不一致的问题（索引约定固定为 `[other, target, forbidden, overflow]`），避免 `policy_evaluation()` 得到错误的状态值。  
   - `scripts/grid_env.py` 新增 `reward_list` 可选参数，使每个算法脚本都可以通过 `GridEnv(..., reward_list=[...])` 独立配置奖励函数（无需手动改 `grid_env.py`）。  
-  - 修正 TD(0) 线性函数逼近权重更新遗漏 $\phi(s_t)$ 的问题。  
-    权重更新公式：  
-    ```math
-    w \leftarrow w + \alpha \delta_t \phi(s_t)
-    ```
-    其中：  
-    ```math
-    \delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w
-    ```
+  - 修正 TD(0) 线性函数逼近权重更新遗漏 $\phi(s_t)$ 的问题。权重更新公式为 $w \leftarrow w + \alpha \delta_t \phi(s_t)$，其中 $\delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w$。
 
 
 **2024.6.7**  
@@ -234,15 +226,7 @@ Fix [issue-7](https://github.com/Ronchy2000/Multi-agent-RL/issues/7): fixed an i
 Fixes for Chapter 8 TD-Linear (linear function approximation):  
 - Align `reward_list` in `scripts/Chapter8_Value Function Approximaton/1.TD-Linear.py` with `scripts/grid_env.py`'s `Rsa` reward-index convention by using `env.reward_list` (`[other, target, forbidden, overflow]`), so `policy_evaluation()` computes correct state values.  
 - Make `scripts/grid_env.py` accept an optional `reward_list` argument so each algorithm script can configure its own reward scheme via `GridEnv(..., reward_list=[...])`.  
-- Fix missing $\phi(s_t)$ in the TD(0) weight update.  
-  Weight update formula:  
-  ```math
-  w \leftarrow w + \alpha \delta_t \phi(s_t)
-  ```
-  where  
-  ```math
-  \delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w
-  ```
+- Fix missing $\phi(s_t)$ in the TD(0) weight update. The weight update formula is $w \leftarrow w + \alpha \delta_t \phi(s_t)$, where $\delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w$.
 **2024.6.7**  
 Major update! The original author's render coordinates were inconsistent with the state settings. The coordinates have been unified as:  
 ![img.png](../img.png)
