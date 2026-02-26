@@ -129,7 +129,7 @@ jobs:
               ' "$INPUT_CHANGELOG")"
 
               if [ -n "$RELEASE_CHANGELOG_BLOCK" ]; then
-                CHANGELOG_CONTENT="## 更新日志（本次发布）\n\n$RELEASE_CHANGELOG_BLOCK\n\n> 完整历史记录请查看 [\`.github/CHANGELOG.md\`](https://github.com/${{ github.repository }}/blob/${{ github.sha }}/.github/CHANGELOG.md)。"
+                CHANGELOG_CONTENT="$(printf '## 更新日志（本次发布）\n\n%s\n\n> 完整历史记录请查看 [`.github/CHANGELOG.md`](https://github.com/%s/blob/%s/.github/CHANGELOG.md)。' "$RELEASE_CHANGELOG_BLOCK" "${{ github.repository }}" "${{ github.sha }}")"
               else
                 echo "未能提取本次发布区块，回退为使用完整 CHANGELOG 内容"
               fi
@@ -137,16 +137,20 @@ jobs:
           else
             echo "处理手动输入的变更日志"
             # 将 \n 替换为实际换行符
-            CHANGELOG_CONTENT="$(echo -e "$INPUT_CHANGELOG" | sed 's/\\n/\n/g')"
+            CHANGELOG_CONTENT="${INPUT_CHANGELOG//\\n/$'\n'}"
           fi
           
           # 添加版本号标题
           VERSION="${{ github.ref_name }}"
-          CHANGELOG_CONTENT="# 版本 $VERSION\n\n$CHANGELOG_CONTENT"
+          CHANGELOG_CONTENT="$(printf '# 版本 %s\n\n%s' "$VERSION" "$CHANGELOG_CONTENT")"
 
           # 创建完整的发布说明
-          echo -e "# 变更日志 / Changelog\n\n$CHANGELOG_CONTENT\n\n---\n\n" > full_body.md
-          cat base_body.md >> full_body.md
+          {
+            printf '%s\n\n' '# 变更日志 / Changelog'
+            printf '%s\n\n' "$CHANGELOG_CONTENT"
+            printf '%s\n\n' '---'
+            cat base_body.md
+          } > full_body.md
           
           # 打印生成的内容用于调试
           echo "===== 生成的发布说明预览 ====="

@@ -28,7 +28,15 @@
 1. 修复 [issue-1](https://github.com/Ronchy2000/Multi-agent-RL/issues/1)：第 8 章 TD-Linear（线性函数逼近）实现中的两个问题：
   - 修正 `1.TD-Linear.py` 中 `reward_list` 与 `grid_env.py` 的 `Rsa` 奖励索引顺序不一致的问题（索引约定固定为 `[other, target, forbidden, overflow]`），避免 `policy_evaluation()` 得到错误的状态值。
   - `grid_env.py` 新增 `reward_list` 可选参数，使每个算法脚本都可以通过 `GridEnv(..., reward_list=[...])` 独立配置奖励函数（无需手动改 `grid_env.py`）。
-  - 修正 TD(0) 线性函数逼近权重更新遗漏 $\phi(s_t)$ 的问题：$w \leftarrow w + \alpha \delta_t \phi(s_t)$，其中 $\delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w$。
+  - 修正 TD(0) 线性函数逼近权重更新遗漏 $\phi(s_t)$ 的问题。
+    权重更新公式：
+    ```math
+    w \leftarrow w + \alpha \delta_t \phi(s_t)
+    ```
+    其中：
+    ```math
+    \delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w
+    ```
 
 <!-- RELEASE:END -->
 
