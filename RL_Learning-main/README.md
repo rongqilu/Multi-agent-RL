@@ -227,6 +227,7 @@ Fixes for Chapter 8 TD-Linear (linear function approximation):
 - Align `reward_list` in `scripts/Chapter8_Value Function Approximaton/1.TD-Linear.py` with `scripts/grid_env.py`'s `Rsa` reward-index convention by using `env.reward_list` (`[other, target, forbidden, overflow]`), so `policy_evaluation()` computes correct state values.  
 - Make `scripts/grid_env.py` accept an optional `reward_list` argument so each algorithm script can configure its own reward scheme via `GridEnv(..., reward_list=[...])`.  
 - Fix missing $\phi(s_t)$ in the TD(0) weight update. The weight update formula is $w \leftarrow w + \alpha \delta_t \phi(s_t)$, where $\delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w$.
+
 **2024.6.7**  
 Major update! The original author's render coordinates were inconsistent with the state settings. The coordinates have been unified as:  
 ![img.png](../img.png)
