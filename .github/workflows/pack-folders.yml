@@ -116,11 +116,28 @@ jobs:
           # 检测输入是否是文件路径
           if [ -f "$INPUT_CHANGELOG" ]; then
             echo "从文件读取变更日志: $INPUT_CHANGELOG"
-            CHANGELOG_CONTENT=$(cat "$INPUT_CHANGELOG")
+            CHANGELOG_CONTENT="$(cat "$INPUT_CHANGELOG")"
+
+            # 如果使用分区维护的 CHANGELOG，则只提取“本次发布（上半部分）”区块，
+            # 支持一次 release 包含多条 <a id> + 日期 + 条目。
+            if [ "$INPUT_CHANGELOG" = ".github/CHANGELOG.md" ] && grep -q '<!-- RELEASE:START -->' "$INPUT_CHANGELOG"; then
+              echo "检测到分区更新日志格式，提取本次发布区块"
+              RELEASE_CHANGELOG_BLOCK="$(awk '
+                /<!-- RELEASE:START -->/ { capture=1; next }
+                /<!-- RELEASE:END -->/   { capture=0; exit }
+                capture { print }
+              ' "$INPUT_CHANGELOG")"
+
+              if [ -n "$RELEASE_CHANGELOG_BLOCK" ]; then
+                CHANGELOG_CONTENT="## 更新日志（本次发布）\n\n$RELEASE_CHANGELOG_BLOCK\n\n> 完整历史记录请查看 [\`.github/CHANGELOG.md\`](https://github.com/${{ github.repository }}/blob/${{ github.sha }}/.github/CHANGELOG.md)。"
+              else
+                echo "未能提取本次发布区块，回退为使用完整 CHANGELOG 内容"
+              fi
+            fi
           else
             echo "处理手动输入的变更日志"
             # 将 \n 替换为实际换行符
-            CHANGELOG_CONTENT=$(echo -e "$INPUT_CHANGELOG" | sed 's/\\n/\n/g')
+            CHANGELOG_CONTENT="$(echo -e "$INPUT_CHANGELOG" | sed 's/\\n/\n/g')"
           fi
           
           # 添加版本号标题
