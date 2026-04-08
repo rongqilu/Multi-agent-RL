@@ -6,6 +6,28 @@
 
 ## 本次发布（上半部分，自动用于 Release）
 <!-- RELEASE:START -->
+<a id="fix-issue-9"></a>
+**2026.4.8**
+1. 修复 [issue-9](https://github.com/Ronchy2000/Multi-agent-RL/issues/9)：修正 `RL_Learning-main/scripts/Chapter5_Monte Carlo Methods/MC_epsilon_greedy.py` 中 Monte Carlo epsilon-greedy 控制实现的两处问题。
+  - 回报计算改为标准的逆序递推 `G = gamma * G + reward`，移除原先基于 `episode.index(step)` 的错位切片与重复累计逻辑，避免折扣回报被错误计算。
+  - 策略改进恢复为教材中的 epsilon-soft 更新公式，不再把策略退化为确定性的 greedy policy。
+  - 同时将 `np.divide(..., where=num_visits != 0)` 改为显式写入零值输出，避免未访问状态动作对产生未初始化的 `qvalue`。
+
+<a id="fix-issue-7-followup"></a>
+**2026.4.8**
+1. 补全 [issue-7](https://github.com/Ronchy2000/Multi-agent-RL/issues/7) 的修复：`RL_Learning-main/scripts/Chapter5_Monte Carlo Methods/MC_Basic.py` 中 `episodes = []` 现在会在每个 `(state, action)` 上重新初始化。
+  - 避免不同状态动作对的 episode 被错误混合到同一个 `Q(s,a)` 估计中。
+  - `mc_basic_simple()` 与 `mc_basic_simple_GUI()` 两处已同步修正。
+
+<a id="refactor-import-paths-20260408"></a>
+**2026.4.8**
+1. 统一 `RL_Learning-main` 中多个教学脚本的 `grid_env` 导入方式，移除对 `sys.path.append("..")` 的相对路径依赖。
+  - 改为基于 `Path(__file__).resolve().parent.parent` 的绝对路径导入写法，提升不同启动目录下的运行稳定性。
+  - 涉及 Monte Carlo、Temporal-Difference、Value Approximation、Policy Gradient 章节的多个脚本。
+
+<!-- RELEASE:END -->
+
+## 历史归档（下半部分，不自动用于 Release）
 <a id="feat-seed-marl-20260226"></a>
 **2026.2.26**
 1. 在 `HAPPO`、`MADDPG`（原描述中有时写作 `MADDOG`）、`MAPPO`、`MATD3` 中新增 `seed` 参数（随机种子）配置，提升训练与评估的可复现性。
@@ -30,9 +52,6 @@
   - `grid_env.py` 新增 `reward_list` 可选参数，使每个算法脚本都可以通过 `GridEnv(..., reward_list=[...])` 独立配置奖励函数（无需手动改 `grid_env.py`）。
   - 修正 TD(0) 线性函数逼近权重更新遗漏 $\phi(s_t)$ 的问题。权重更新公式为 $w \leftarrow w + \alpha \delta_t \phi(s_t)$，其中 $\delta_t = r + \gamma \phi(s_{t+1})^\top w - \phi(s_t)^\top w$。
 
-<!-- RELEASE:END -->
-
-## 历史归档（下半部分，不自动用于 Release）
 <a id="history-legacy-format"></a>
 **历史记录（旧格式归档）**
 1. 新功能
