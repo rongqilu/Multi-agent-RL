@@ -3,10 +3,13 @@ import time
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter  # 导入SummaryWriter
 
-# 引用上级目录
+# 引用上级目录 - 使用绝对路径，跨平台兼容
 import sys
-sys.path.append("..")
+from pathlib import Path
+# 将 scripts 目录添加到 sys.path（当前文件的父目录的父目录）
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import grid_env
+
 
 class MC_epsilon_greedy:
     def __init__(self, env = grid_env.GridEnv):
@@ -88,11 +91,10 @@ class MC_epsilon_greedy:
                                           episode_length)  # 获取一个episode
 
             # 对于每个step的回报累积和访问次数更新
+            G = 0
             for step in reversed(episode):  # 逆序遍历，从T-1到0
                 state, action, reward = step["state"], step["action"], step["reward"]
-                G = reward  # 当前步的即时奖励
-                for rt in episode[::-1][episode.index(step):]:  # 从当前步开始反向累加未来奖励
-                    G = self.gama * G + rt["reward"]  # 累积折扣回报
+                G = self.gama * G + reward  # 递推计算当前时刻的折扣回报
                 returns[state, action] += G  # 更新累积回报
                 num_visits[state, action] += 1  # 更新状态动作对的访问次数
 
@@ -102,11 +104,10 @@ class MC_epsilon_greedy:
             best_actions = np.argmax(self.qvalue, axis=1)  # 找到每个状态下最优的动作
             for state in range(self.state_space_size):
                 for action in range(self.action_space_size):
-                    # self.policy[state, action] = (1 - epsilon + epsilon / self.action_space_size) * (
-                    #             action == best_actions[state]) + \
-                    #                              (epsilon / self.action_space_size) * (action != best_actions[state])
-                    self.policy[state, :] = 0  # 先将所有动作概率设为0
-                    self.policy[state, best_actions[state]] = 1  # 最优动作概率设为1
+                    self.policy[state, action] = (
+                        (1 - epsilon + epsilon / self.action_space_size) * (action == best_actions[state])
+                        + (epsilon / self.action_space_size) * (action != best_actions[state])
+                    )
 
 
 if __name__ == "__main__":
@@ -129,5 +130,5 @@ if __name__ == "__main__":
     solver.show_state_value(solver.state_value, y_offset=0.25)
     gird_world.plot_title("Episode_length = " + str(episode_length))
     gird_world.render()
-    # gird_world.render_clear()
+    gird_world.render_clear()
     print("--------------------")

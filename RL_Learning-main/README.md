@@ -73,6 +73,13 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 
 ## 更新日志
 
+<a id="fix-issue-9"></a>
+**2026.4.8**  
+1. 修复 [issue-9](https://github.com/Ronchy2000/Multi-agent-RL/issues/9)：修正 `scripts/Chapter5_Monte Carlo Methods/MC_epsilon_greedy.py` 中 Monte Carlo epsilon-greedy 控制实现的两处问题。  
+  - 回报计算改为标准的逆序递推 `G = gamma * G + reward`，移除原先基于 `episode.index(step)` 的错位切片与重复累计逻辑，避免折扣回报被错误计算。  
+  - 策略改进恢复为教材中的 epsilon-soft 更新公式，不再把策略退化为确定性的 greedy policy。  
+  - 同时将 `np.divide(..., where=num_visits != 0)` 改为显式写入零值输出，避免未访问状态动作对产生未初始化的 `qvalue`。  
+
 <a id="fix-issue-8"></a>
 **2026.2.19**  
 1. 修复 [issue-8](https://github.com/Ronchy2000/Multi-agent-RL/issues/8)：`obtain_episode()` 现在在达到终止状态（`done=True`）时提前结束采样，`length` 仅作为最大步数上限。  
@@ -208,6 +215,13 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 ```
 
 ## Update Log
+
+<a id="fix-issue-9-en"></a>
+**2026.4.8**  
+Fix [issue-9](https://github.com/Ronchy2000/Multi-agent-RL/issues/9): corrected two problems in the Monte Carlo epsilon-greedy control implementation in `scripts/Chapter5_Monte Carlo Methods/MC_epsilon_greedy.py`.  
+- Return computation now uses the standard backward recursion `G = gamma * G + reward`, removing the misaligned slice based on `episode.index(step)` that caused incorrect and duplicated discounted returns.  
+- Policy improvement now follows the textbook epsilon-soft update formula instead of collapsing to a deterministic greedy policy.  
+- `np.divide(..., where=num_visits != 0)` now writes explicit zeros for unvisited state-action pairs, preventing uninitialized `qvalue` entries.  
 
 <a id="fix-issue-8-en"></a>
 **2026.2.19**  
