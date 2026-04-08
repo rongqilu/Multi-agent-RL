@@ -116,7 +116,6 @@ class MC_Basic:
         :return:
         """
         num_episode = 5
-        episodes = []
         for epoch in range(epochs):
             for state in range(self.state_space_size):
                 """
@@ -126,6 +125,7 @@ class MC_Basic:
                 我的理解：对于一个state，获取到了该状态下，每一个action下的episode之后再进行 policy improvement
                 """
                 for action in range(self.action_space_size):
+                    episodes = []
                     # Collect sufficiently many episodes starting from (s, a) by following πk
                     for tmp in range(num_episode): #对每个action 采集 10条 episode
                         episodes.append(self.obtain_episode(self.policy, state, action, length))
@@ -153,10 +153,10 @@ class MC_Basic:
         :param length: 每一个 state-action 对的长度
         """
         num_episode = 5
-        episodes = []
         for epoch in range(epochs):
             for state in tqdm(range(self.state_space_size), desc = f"Epoch {epoch}/{epochs}"):
                 for action in range(self.action_space_size):
+                    episodes = []
                     # Collect sufficiently many episodes starting from (s, a) by following πk
                     for tmp in range(num_episode):  # 对每个action 采集 10条 episode
                         episodes.append(self.obtain_episode(self.policy, state, action, length))

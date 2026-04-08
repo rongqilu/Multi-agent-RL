@@ -90,6 +90,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 **2026.2.19**  
 1. 修复 [issue-7](https://github.com/Ronchy2000/Multi-agent-RL/issues/7)：修正 `scripts/Chapter5_Monte Carlo Methods/MC_Basic.py` 中 `mc_basic_simple` 与 `mc_basic_simple_GUI` 的缩进错误。  
   - `sum_qvalue_list.append(sum_qvalue)` 现在位于 `for each_episode in episodes:` 循环内部，确保每条 episode 的回报都被统计。  
+  - `episodes = []` 现在会在每个 `(state, action)` 上重新初始化，避免不同状态动作对的 episode 被错误混合到同一个 `Q(s,a)` 估计中。  
   - 修复后 `self.qvalue[state][action] = np.mean(sum_qvalue_list)` 将基于完整采样集合计算均值，不再只使用最后一条 episode 的回报。  
 
 <a id="fix-issue-1"></a>
@@ -233,6 +234,7 @@ Fix [issue-8](https://github.com/Ronchy2000/Multi-agent-RL/issues/8): `obtain_ep
 **2026.2.19**  
 Fix [issue-7](https://github.com/Ronchy2000/Multi-agent-RL/issues/7): fixed an indentation bug in `scripts/Chapter5_Monte Carlo Methods/MC_Basic.py` (`mc_basic_simple` and `mc_basic_simple_GUI`).  
 - `sum_qvalue_list.append(sum_qvalue)` is now inside the `for each_episode in episodes:` loop, so every sampled episode return is included.  
+- `episodes = []` is now reinitialized for each `(state, action)` pair, so episode samples from different state-action pairs are no longer mixed into the same `Q(s,a)` estimate.  
 - After the fix, `self.qvalue[state][action] = np.mean(sum_qvalue_list)` uses the full sampled set instead of only the last episode return.  
 
 <a id="fix-issue-1-en"></a>
