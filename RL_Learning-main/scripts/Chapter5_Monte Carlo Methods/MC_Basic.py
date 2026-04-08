@@ -3,9 +3,11 @@ import time
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter  # 导入SummaryWriter
 
-# 引用上级目录
+# 引用上级目录 - 使用绝对路径，跨平台兼容
 import sys
-sys.path.append("..")
+from pathlib import Path
+# 将 scripts 目录添加到 sys.path（当前文件的父目录的父目录）
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import grid_env
 
 from tqdm import tqdm
